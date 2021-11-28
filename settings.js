@@ -20,7 +20,7 @@
  *
  **/
 
-module.exports = {
+let settings = {
 
 /*******************************************************************************
  * Flow File and User Directory Settings
@@ -164,7 +164,7 @@ module.exports = {
      * The following property can be used to specify a different root path.
      * If set to false, this is disabled.
      */
-    //httpAdminRoot: '/admin',
+    httpAdminRoot: '/admin',
 
     /** The following property can be used to add a custom middleware function
      * in front of all admin http routes. For example, to set custom http
@@ -287,7 +287,7 @@ module.exports = {
       * will install/load. It can use '*' as a wildcard that matches anything.
       */
      externalModules: {
-         // autoInstall: false,   /** Whether the runtime will attempt to automatically install missing modules */
+         autoInstall: true,   /** Whether the runtime will attempt to automatically install missing modules */
          // autoInstallRetry: 30, /** Interval, in seconds, between reinstall attempts */
          // palette: {              /** Configuration for the Palette Manager */
          //     allowInstall: true, /** Enable the Palette Manager in the editor */
@@ -353,7 +353,7 @@ module.exports = {
             /** Select the text editor component used by the editor.
              * Defaults to "ace", but can be set to "ace" or "monaco"
              */
-            lib: "ace",
+            lib: "monaco",
             options: {
                 /** The follow options only apply if the editor is set to "monaco"
                  *
@@ -425,10 +425,10 @@ module.exports = {
      *  middleware:{function or array}, (req,res,next) - http middleware
      *  ioMiddleware:{function or array}, (socket,next) - socket.io middleware
      */
-    //ui: { path: "ui" },
+    ui: { path: "ui" },
 
     /** Colourise the console output of the debug node */
-    //debugUseColors: true,
+    debugUseColors: true,
 
     /** The maximum length, in characters, of any message sent to the debug sidebar tab */
     debugMaxLength: 1000,
@@ -487,3 +487,17 @@ module.exports = {
     //    */
     //},
 }
+
+// Set up adminAuth if user name and password set
+if (process.env.NODE_RED_USERNAME && process.env.NODE_RED_PASSWORD) {
+    settings.adminAuth = {
+        type: "credentials",
+        users: [{
+            username: process.env.NODE_RED_USERNAME,
+            password: process.env.NODE_RED_PASSWORD,
+            permissions: "*"
+        }]
+    }
+}
+
+module.exports = settings;

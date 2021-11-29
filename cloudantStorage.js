@@ -15,9 +15,7 @@
  **/
 
 const { CloudantV1 } = require('@ibm-cloud/cloudant');
-const util = require('util');
 const fs = require('fs');
-const { console } = require('console');
 
 let settings;
 let appname;
@@ -354,8 +352,8 @@ let cloudantStorage = {
     },
 
     saveLibraryEntry: function (type, path, meta, body) {
-
-        let p = path.split("/");    // strip multiple slash
+        // Strip multiple slashes
+        let p = path.split("/");
         p = p.filter(Boolean);
         path = p.slice(0, p.length).join("/")
 

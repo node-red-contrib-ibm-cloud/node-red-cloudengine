@@ -13,6 +13,7 @@
         "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
     },
     "dependencies": {
+        "node-red": "^2.x.x",
         "@ibm-cloud/cloudant": "^0.x.x"  
     },
     "contributors": [

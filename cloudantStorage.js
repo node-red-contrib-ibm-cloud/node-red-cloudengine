@@ -82,10 +82,10 @@ let cloudantStorage = {
             return err;
         }
 
-        dbservice = CloudantV1.newInstance({serviceName: settings.serviceName});
         appname = settings.prefix || require('os').hostname();
         dbname = settings.db || "nodered";
-
+        dbservice = CloudantV1.newInstance({serviceName: settings.serviceName || "NODE_RED_CLOUDANT"});
+        
         return new Promise(function (resolve, reject) {
             // Does database exist?
             dbservice.headDatabase({db: dbname})

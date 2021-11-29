@@ -1,0 +1,38 @@
+{
+    "name": "node-red-codeengine",
+    "version": "0.0.1",
+    "description": "Dockerised Node-RED for IBM Code Engine with optional Cloudant filestore",
+    "homepage": "http://nodered.org",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/node-red-contrib-ibm-cloud/node-red-codeengine"
+    },
+    "main": "node_modules/node-red/red/red.js",
+    "scripts": {
+        "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
+    },
+    "dependencies": {
+        "@ibm-cloud/cloudant": "^0.x.x"  
+    },
+    "contributors": [
+        {
+            "name": "Dave Conway-Jones"
+        },
+        {
+            "name": "Nick O'Leary"
+        },
+        {
+            "name": "James Thomas"
+        },
+        {
+            "name": "Raymond Mouthaan"
+        },
+        {
+            "name": "Adam Hammond"
+        }
+    ],
+    "engines": {
+        "node": ">=12"
+    }
+}

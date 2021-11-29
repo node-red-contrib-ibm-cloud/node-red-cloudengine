@@ -38,11 +38,11 @@ function prepopulateFlows(resolve) {
         resolve();
     }).catch(error => {
         let promises = [];
-        if (fs.existsSync(settings.userDir + "/defaults/flows.json")) {
+        if (fs.existsSync(settings.userDir + "/default/flows.json")) {
             try {
-                const flow = fs.readFileSync(settings.userDir + "/defaults/flows.json", "utf8");
+                const flow = fs.readFileSync(settings.userDir + "/default/flows.json", "utf8");
                 const flows = JSON.parse(flow);
-                console.log(`[cloudantStorage] Installing default flows from ${settings.userDir}/defaults/flows.json`);
+                console.log(`[cloudantStorage] Installing default flows from ${settings.userDir}/default/flows.json`);
                 promises.push(cloudantStorage.saveFlows(flows));
             } catch (err2) {
                 console.log("[cloudantStorage] Failed to populate default flows");
@@ -51,11 +51,11 @@ function prepopulateFlows(resolve) {
         } else {
             console.log("[cloudantStorage] No default flows found");
         };
-        if (fs.existsSync(settings.userDir + "/defaults/flows_cred.json")) {
+        if (fs.existsSync(settings.userDir + "/default/flow_creds.json")) {
             try {
-                const cred = fs.readFileSync(settings.userDir + "/defaults/flow_creds.json", "utf8");
+                const cred = fs.readFileSync(settings.userDir + "/default/flow_creds.json", "utf8");
                 const creds = JSON.parse(cred);
-                console.log(`[cloudantStorage] Installing default credentials from ${settings.userDir}/defaults/flow_creds.json`);
+                console.log(`[cloudantStorage] Installing default credentials from ${settings.userDir}/default/flow_creds.json`);
                 promises.push(cloudantStorage.saveCredentials(creds));
             } catch (err2) {
                 console.log("[cloudantStorage] Failed to populate default credentials");

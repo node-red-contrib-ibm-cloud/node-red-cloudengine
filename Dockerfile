@@ -10,5 +10,5 @@ FROM nodered/node-red
 #       If you need to use an external volume for persistence then
 #       copy your settings and flows files to that volume instead.
 COPY settings.js /data/settings.js
-# COPY flows_cred.json /data/flows_cred.json
-# COPY flows.json /data/flows.json
+
+COPY default/ /data/default/

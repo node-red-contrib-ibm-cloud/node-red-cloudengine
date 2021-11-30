@@ -17,9 +17,12 @@
 const { CloudantV1 } = require('@ibm-cloud/cloudant');
 const fs = require('fs');
 
+let servicename = "NODE_RED_CLOUDANT"
+let appname = "nodered";
+let dbname = "nodered";
+let debug = "false";
+
 let settings;
-let appname;
-let dbname;
 let dbservice;
 
 let currentFlowRev = null;
@@ -32,7 +35,7 @@ let libraryCache = {};
 function prepopulateFlows(resolve) {
     dbservice.getDocument({
         db: dbname,
-        docID: appname + "/flow"
+        docId: appname + "/flow"
     }).then(response => {
         // Flows already exist - leave them alone
         resolve();
@@ -74,17 +77,20 @@ function prepopulateFlows(resolve) {
 let cloudantStorage = {
     init: function (_settings) {
         settings = _settings.cloudantService || {};
-        //console.log(JSON.stringify(settings, null, 2));
 
-        if (!settings) {
-            var err = Promise.reject("[cloudantStorage] Settings not found");
-            err.catch(err => {});
-            return err;
+        debug = settings.debug || debug;
+        servicename = settings.serviceName || servicename;
+        appname = settings.prefix || appname;
+        dbname = settings.db || dbname;
+
+        if (debug) {
+            console.log(`[cloudantStorage] debug: ${debug}`);
+            console.log(`[cloudantStorage] servicename: ${servicename}`);
+            console.log(`[cloudantStorage] appname: ${appname}`);
+            console.log(`[cloudantStorage] dbname: ${dbname}`);
         }
 
-        appname = settings.prefix || require('os').hostname();
-        dbname = settings.db || "nodered";
-        dbservice = CloudantV1.newInstance({serviceName: settings.serviceName || "NODE_RED_CLOUDANT"});
+        dbservice = CloudantV1.newInstance({serviceName: servicename});
         
         return new Promise(function (resolve, reject) {
             // Does database exist?
@@ -152,7 +158,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
-                docID: appname + "/flow"
+                docId: appname + "/flow"
             }).then(response => {
                 currentFlowRev = response.result.rev
                 resolve(resolve.result.flow);
@@ -170,7 +176,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             let params = {
                 db: dbname,
-                docID: appname + "/flow",
+                docId: appname + "/flow",
                 document: {flow: flows}
             };
             if (currentFlowRev) {
@@ -190,7 +196,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
-                docID: appname + "/credential"
+                docId: appname + "/credential"
             }).then(response => {
                 currentCredRev = response.result.rev
                 resolve(resolve.result.credentials);
@@ -208,7 +214,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             let params = {
                 db: dbname,
-                docID: appname + "/credential",
+                docId: appname + "/credential",
                 document: {credentials: credentials}
             };
             if (currentCredRev) {
@@ -228,7 +234,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
-                docID: appname + "/settings"
+                docId: appname + "/settings"
             }).then(response => {
                 currentSettingsRev = response.result.rev
                 resolve(resolve.result.settings);
@@ -246,7 +252,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             let params = {
                 db: dbname,
-                docID: appname + "/settings",
+                docId: appname + "/settings",
                 document: {settings: settings}
             };
             if (currentSettingsRev) {
@@ -266,7 +272,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
-                docID: appname + "/sessions"
+                docId: appname + "/sessions"
             }).then(response => {
                 currentSessionsRev = response.result.rev
                 resolve(resolve.result.sessions);
@@ -284,7 +290,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             let params = {
                 db: dbname,
-                docID: appname + "/sessions",
+                docId: appname + "/sessions",
                 document: {sessions: sessions}
             };
             if (currentSessionsRev) {
@@ -313,7 +319,7 @@ let cloudantStorage = {
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
-                docID: key
+                docId: key
             }).then(response => {
                 libraryCache[key] = response.result;
                 resolve(response.result);
@@ -366,11 +372,11 @@ let cloudantStorage = {
             
             dbservice.getDocument({
                 db: dbname,
-                docID: key
+                docId: key
             }).then(response => {
                 let params = {
                     db: dbname,
-                    docID: key,
+                    docId: key,
                     document: {meta: meta, body: body}
                 };
                 if (response.result.rev) {

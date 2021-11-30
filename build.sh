@@ -1,3 +1,3 @@
 #! /bin/zsh
 
-docker build -t nrce .
+podman build -t nrce .

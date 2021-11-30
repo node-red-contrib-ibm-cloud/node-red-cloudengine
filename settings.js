@@ -508,15 +508,15 @@ if (process.env.NODE_RED_CLOUDANT_URL) {
     settings.cloudantService = {
         // The name of the service instance to use.
         serviceName: "NODE_RED_CLOUDANT",
-        // The URL to use
-        url: process.env.NODE_RED_CLOUDANT_URL,
         // The name of the database to use
         db: process.env.NODE_RED_CLOUDANT_DB_NAME || "nodered",
         // The prefix for all document names stored by this instance.
-        prefix: process.env.NODE_RED_CLOUDANT_APP_NAME || "nr"
+        prefix: process.env.NODE_RED_CLOUDANT_APP_NAME || "nodered",
+        // Debug flag
+        debug: true
     }
     console.log(`Using Cloudant service - (DB: ${settings.cloudantService.db} Prefix: ${settings.cloudantService.prefix})`);
-    settings.storageModule = require("./cloudantStorage.js");
+    settings.storageModule = require("/usr/src/node-red/cloudantStorage.js");
 } else {
     // No Cloudant service URL found. Fall back to localfilesystem storage
     console.log("Falling back to localfilesystem storage. Changes will *not* be saved across application restarts."); 

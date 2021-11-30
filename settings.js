@@ -249,7 +249,7 @@ let settings = {
               * trace - record very detailed logging + debug + info + warn + error + fatal errors
               * off - turn off all logging (doesn't affect metrics or audit)
               */
-             level: "info",
+             level: "debug",
              /** Whether or not to include metric events in the log output */
              metrics: false,
              /** Whether or not to include audit events in the log output */
@@ -501,7 +501,8 @@ if (process.env.NODE_RED_USERNAME && process.env.NODE_RED_PASSWORD) {
 }
 
 // Set up Cloudant database if service URL set
-console.log(`Env: ${process.env.NODE_RED_CLOUDANT_URL}`);
+console.log(process.env.NODE_RED_CLOUDANT_URL);
+
 if (process.env.NODE_RED_CLOUDANT_URL) {
     // Set the Cloudant storage module settings
     settings.cloudantService = {
@@ -515,7 +516,7 @@ if (process.env.NODE_RED_CLOUDANT_URL) {
         prefix: process.env.NODE_RED_CLOUDANT_APP_NAME || "nr"
     }
     console.log(`Using Cloudant service - (DB: ${settings.cloudantService.db} Prefix: ${settings.cloudantService.prefix})`);
-    settings.storageModule = require("./cloudantStorage");
+    settings.storageModule = require("./cloudantStorage.js");
 } else {
     // No Cloudant service URL found. Fall back to localfilesystem storage
     console.log("Falling back to localfilesystem storage. Changes will *not* be saved across application restarts."); 

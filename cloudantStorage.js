@@ -22,7 +22,7 @@ let appname = "nodered";
 let dbname = "nodered";
 let debug = "false";
 
-let settings;
+let csettings = {};
 let dbservice;
 
 let currentFlowRev = null;
@@ -33,19 +33,21 @@ let currentSessionsRev = null;
 let libraryCache = {};
 
 function prepopulateFlows(resolve) {
+    if (debug) {console.log(`[cloudantStorage] Entering prepopulateFlows`)}
     dbservice.getDocument({
         db: dbname,
         docId: appname + "/flow"
     }).then(response => {
         // Flows already exist - leave them alone
+        if (debug) {console.log(`[cloudantStorage] Flows already exist`)}
         resolve();
     }).catch(error => {
         let promises = [];
-        if (fs.existsSync(settings.userDir + "/default/flows.json")) {
+        if (fs.existsSync(csettings.userDir + "/default/flows.json")) {
             try {
-                const flow = fs.readFileSync(settings.userDir + "/default/flows.json", "utf8");
+                const flow = fs.readFileSync(csettings.userDir + "/default/flows.json", "utf8");
                 const flows = JSON.parse(flow);
-                console.log(`[cloudantStorage] Installing default flows from ${settings.userDir}/default/flows.json`);
+                console.log(`[cloudantStorage] Installing default flows from ${csettings.userDir}/default/flows.json`);
                 promises.push(cloudantStorage.saveFlows(flows));
             } catch (err2) {
                 console.log("[cloudantStorage] Failed to populate default flows");
@@ -54,11 +56,11 @@ function prepopulateFlows(resolve) {
         } else {
             console.log("[cloudantStorage] No default flows found");
         };
-        if (fs.existsSync(settings.userDir + "/default/flow_creds.json")) {
+        if (fs.existsSync(csettings.userDir + "/default/flow_creds.json")) {
             try {
-                const cred = fs.readFileSync(settings.userDir + "/default/flow_creds.json", "utf8");
+                const cred = fs.readFileSync(csettings.userDir + "/default/flow_creds.json", "utf8");
                 const creds = JSON.parse(cred);
-                console.log(`[cloudantStorage] Installing default credentials from ${settings.userDir}/default/flow_creds.json`);
+                console.log(`[cloudantStorage] Installing default credentials from ${csettings.userDir}/default/flow_creds.json`);
                 promises.push(cloudantStorage.saveCredentials(creds));
             } catch (err2) {
                 console.log("[cloudantStorage] Failed to populate default credentials");
@@ -76,12 +78,12 @@ function prepopulateFlows(resolve) {
 
 let cloudantStorage = {
     init: function (_settings) {
-        settings = _settings.cloudantService || {};
+        csettings = _settings.cloudantService || {};
 
-        debug = settings.debug || debug;
-        servicename = settings.serviceName || servicename;
-        appname = settings.prefix || appname;
-        dbname = settings.db || dbname;
+        debug = csettings.debug || debug;
+        servicename = csettings.serviceName || servicename;
+        appname = csettings.prefix || appname;
+        dbname = csettings.db || dbname;
 
         if (debug) {
             console.log(`[cloudantStorage] debug: ${debug}`);
@@ -93,7 +95,7 @@ let cloudantStorage = {
         dbservice = CloudantV1.newInstance({serviceName: servicename});
         
         return new Promise(function (resolve, reject) {
-            // Does database exist?
+            
             dbservice.headDatabase({db: dbname})
             .then(response => {
                 console.log("[cloudantStorage] Flows database found");
@@ -137,7 +139,7 @@ let cloudantStorage = {
                             'lib_entries_by_app_and_type': libMap
                         }
                     }
-                    service.putDesignDocument({
+                    dbservice.putDesignDocument({
                         db: dbname,
                         designDocument: designDoc,
                         ddoc: 'library'
@@ -160,11 +162,11 @@ let cloudantStorage = {
                 db: dbname,
                 docId: appname + "/flow"
             }).then(response => {
-                currentFlowRev = response.result.rev
-                resolve(resolve.result.flow);
+                currentFlowRev = response.result._rev
+                resolve(response.result.flow);
             }).catch(error => {
                 if (error.status != 404) {
-                    reject(error.toString());
+                    reject("[getFlows] " + error.toString());
                 } else {
                     resolve([]);
                 }
@@ -187,22 +189,25 @@ let cloudantStorage = {
                 currentFlowRev = response.result.rev;
                 resolve();
             }).catch(error => {
-                reject(error.toString())
+                reject("[saveFlows] " + error.toString())
             });
         });
     },
 
     getCredentials: function () {
+        console.log("[getCredentials]: entering function");
         return new Promise(function (resolve, reject) {
             dbservice.getDocument({
                 db: dbname,
                 docId: appname + "/credential"
             }).then(response => {
-                currentCredRev = response.result.rev
-                resolve(resolve.result.credentials);
+                currentCredRev = response.result._rev;
+                console.log("[getCredentials:");
+                console.dir(response.result.credentials, {depth: null, colors: true});
+                resolve(response.result.credentials);
             }).catch(error => {
                 if (error.status != 404) {
-                    reject(error.toString());
+                    reject("[getCredentials] " + error.toString());
                 } else {
                     resolve([]);
                 }
@@ -210,22 +215,26 @@ let cloudantStorage = {
         });
     },
 
-    saveCredentials: function (credentials) {
+    saveCredentials: function (creds) {
+        console.log("[saveCredentials] creds:");
+        console.dir(creds, {depth: null, colors: true});
         return new Promise(function (resolve, reject) {
             let params = {
                 db: dbname,
                 docId: appname + "/credential",
-                document: {credentials: credentials}
+                document: {credentials: creds}
             };
             if (currentCredRev) {
                 params.rev = currentCredRev;
             };
+            console.log("[saveCredentials] params:");
+            console.dir(params, {depth: null, colors: true});
             dbservice.putDocument(params)
             .then(response =>{
                 currentCredRev = response.result.rev;
                 resolve();
             }).catch(error => {
-                reject(error.toString())
+                reject("[saveCredentials] " + error.toString())
             });
         });
     },
@@ -236,11 +245,12 @@ let cloudantStorage = {
                 db: dbname,
                 docId: appname + "/settings"
             }).then(response => {
-                currentSettingsRev = response.result.rev
-                resolve(resolve.result.settings);
+                currentSettingsRev = response.result._rev
+                console.log(`[getSettings] currentSettingsRev: ${currentSettingsRev}`)
+                resolve(response.result.settings);
             }).catch(error => {
                 if (error.status != 404) {
-                    reject(error.toString());
+                    reject("[getSettings] " + error.toString());
                 } else {
                     resolve([]);
                 }
@@ -255,6 +265,7 @@ let cloudantStorage = {
                 docId: appname + "/settings",
                 document: {settings: settings}
             };
+            console.log(`[saveSettings] currentSettingsRev: ${currentSettingsRev}`)
             if (currentSettingsRev) {
                 params.rev = currentSettingsRev;
             };
@@ -263,7 +274,7 @@ let cloudantStorage = {
                 currentSettingsRev = response.result.rev;
                 resolve();
             }).catch(error => {
-                reject(error.toString())
+                reject("[saveSettings] " + error.toString())
             });
         });
     },
@@ -274,11 +285,11 @@ let cloudantStorage = {
                 db: dbname,
                 docId: appname + "/sessions"
             }).then(response => {
-                currentSessionsRev = response.result.rev
-                resolve(resolve.result.sessions);
+                currentSessionsRev = response.result._rev
+                resolve(response.result.sessions);
             }).catch(error => {
                 if (error.status != 404) {
-                    reject(error.toString());
+                    reject("[getSessions] " + error.toString());
                 } else {
                     resolve([]);
                 }
@@ -301,7 +312,7 @@ let cloudantStorage = {
                 currentSessionsRev = response.result.rev;
                 resolve();
             }).catch(error => {
-                reject(error.toString())
+                reject("[saveSessions] " + error.toString())
             });
         });
     },
@@ -351,7 +362,7 @@ let cloudantStorage = {
                     libraryCache[key] = dirs.concat(files);
                     resolve(libraryCache[key]);
                 }).catch(error => {
-                    reject(error.toString())
+                    reject("[getLibraryEntry] " + error.toString())
                 })
             })
         });
@@ -379,8 +390,8 @@ let cloudantStorage = {
                     docId: key,
                     document: {meta: meta, body: body}
                 };
-                if (response.result.rev) {
-                    params.rev = response.result.rev;
+                if (response.result._rev) {
+                    params.rev = response.result._rev;
                 };
 
                 dbservice.putDocument(params)
@@ -392,10 +403,10 @@ let cloudantStorage = {
                     libraryCache[key] = body;
                     resolve();
                 }).catch(error => {
-                    reject(error.toString())
+                    reject("[saveLibraryEntry] " + error.toString())
                 })
             }).catch(error => {
-                reject(error.toString())
+                reject("[saveLibraryEntry] " + error.toString())
             })
         });
     }

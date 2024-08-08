@@ -1,6 +1,6 @@
 {
     "name": "node-red-codeengine",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Dockerised Node-RED for IBM Code Engine with optional Cloudant filestore",
     "homepage": "http://nodered.org",
     "license": "Apache-2.0",

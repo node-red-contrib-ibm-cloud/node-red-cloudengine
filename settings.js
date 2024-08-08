@@ -252,7 +252,7 @@ module.exports = {
      *      and httpStaticRoot = "/static/"
      *      then "/home/nol/pics/" will be served at "/static/img/"
      */
-    httpStaticRoot: '/static/',
+    httpStaticRoot: '/data/static/',
 
     /** The following property can be used to configure cross-origin resource sharing
      * in the http static routes.

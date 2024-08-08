@@ -17,3 +17,4 @@ COPY cloudantStorage.js .
 
 COPY settings.js /data/settings.js
 COPY default/ /data/default/
+COPY static/ /data/static

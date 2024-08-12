@@ -20,7 +20,7 @@
  *
  **/
 
-module.exports = {
+settings = {
 
 /*******************************************************************************
  * Flow File and User Directory Settings

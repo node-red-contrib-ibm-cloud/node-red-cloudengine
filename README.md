@@ -6,17 +6,16 @@ _work in progress_
 ## Environment variables
 
 ### Authentication for editor
-`NODE_RED_USERNAME` Admin username
 
-`NODE_RED_PASSWORD` Admin password
+To add authentication to the Node-RED editor, set `NODE_RED_USERNAME` to the editor username and `NODE_RED_PASSWORD` to the editor password
 
 ### Cloudant/CouchDB persistent storage
-
-`NODE_RED_CLOUDANT_URL` URL to Cloudant/CouchDB database
-
-`NODE_RED_CLOUDANT_DB_NAME` Name of database used to store Node-RED data (defaults to **nodered**)
-
-`NODE_RED_CLOUDANT_APP_NAME` Name of application used as document prefix (defaults to **nodered**)
+To use Cloudant or CouchDB for persistent storage for Node-RED configuration, flows and credentials, set the following:
+```
+NODE_RED_CLOUDANT_URL`=<Cloudant/CouchDB URL>
+NODE_RED_CLOUDANT_DB_NAME=<database name> // Defaults to _nodered_
+NODE_RED_CLOUDANT_APP_NAME`=<application name> // Used as document prefix, defaults to _nodered_
+```
 
 #### Cloudant authentication
 To use IBM Cloud IAM authentication set `NODE_RED_CLOUDANT_APIKEY` to the API key in the console.

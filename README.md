@@ -3,8 +3,14 @@ Node RED docker configuration designed to run on IBM Code Engine
 
 _work in progress_
 
-`NODE_RED_USERNAME`
-`NODE_RED_PASSWORD`
+## Environment variables
+
+### Authentication
+`NODE_RED_USERNAME` Admin username
+
+`NODE_RED_PASSWORD` Admin password
+
+### Cloudant/CouchDB storage
 
 `NODE_RED_CLOUDANT_URL`
 

@@ -1,6 +1,6 @@
 {
     "name": "node-red-codeengine",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Dockerised Node-RED for IBM Code Engine with optional Cloudant filestore",
     "homepage": "http://nodered.org",
     "license": "Apache-2.0",
@@ -13,7 +13,7 @@
         "start": "node $NODE_OPTIONS node_modules/node-red/red.js $FLOWS"
     },
     "dependencies": {
-        "node-red": "^2.x.x",
+        "node-red": "^4.x.x",
         "@ibm-cloud/cloudant": "^0.x.x"  
     },
     "contributors": [
@@ -32,8 +32,5 @@
         {
             "name": "Adam Hammond"
         }
-    ],
-    "engines": {
-        "node": ">=12"
-    }
+    ]
 }
